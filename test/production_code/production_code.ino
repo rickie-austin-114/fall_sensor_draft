@@ -1,49 +1,6 @@
-import tkinter as tk
-import os
-import subprocess
 
 
-
-
-def get_connected_arduino_ports():
-    # Command to list all connected Arduino boards
-    command = ["arduino-cli", "board", "list"]
-    
-    # Run the command and capture the output
-    result = subprocess.run(command, capture_output=True, text=True)
-    
-    # Check for errors in execution
-    if result.returncode != 0:
-        print("Failed to execute command:", result.stderr)
-        return []
-
-    # Split the output into lines for processing
-    lines = result.stdout.splitlines()
-
-    output = []
-
-    print(len(lines))
-    
-    for item in lines:
-        for word in item.split():
-            if word.startswith("/dev/"):
-                output.append(word)
-    
-    return output
-
-
-def execute_function():
-    wifi = str(entry1.get())
-    password = str(entry2.get())
-
-    devui = str(entry3.get())
-    appkey = str(entry4.get())
-
-    print("executed")
-
-    content = """
-
-    #include \"Arduino.h\"
+    #include "Arduino.h"
     #include <WiFi.h>
     #include <HTTPClient.h>
 
@@ -53,21 +10,11 @@ def execute_function():
     // Change these setting
 
     // from chirpstack
-    #define DEVEUI \""""
-
-    content += devui 
-
-    content += """\"
-#define APPKEY \""""
-    content += appkey
-    content += """\"
+    #define DEVEUI "rickie"
+#define APPKEY "austin"
     //configure wifi
-    const char* ssid = \""""
-    content += wifi
-    content += """\"; // Your WiFi SSID
-    const char* password = \""""
-    content += password
-    content += """\"; // Your WiFi password
+    const char* ssid = "rickie"; // Your WiFi SSID
+    const char* password = "austin"; // Your WiFi password
 
 
     // optional, may change for customia
@@ -125,7 +72,7 @@ def execute_function():
         }
         
         // Null-terminate the string
-        buffer[index] = '\\0';
+        buffer[index] = '\0';
 
         // Print the received response to the Serial Monitor
         Serial.print("Received: ");
@@ -227,12 +174,12 @@ def execute_function():
                 Serial.println("Falled detected");
 
                 // Send LoRaWAN
-                SendCommand("AT+CMSGHEX=\\"1234\\"");
+                SendCommand("AT+CMSGHEX=\"1234\"");
                 // Send Wifi
                 sendPostRequest();
             } else {
                 // Send LoRaWAN
-                SendCommand("AT+CMSGHEX=\\"4321\\"");
+                SendCommand("AT+CMSGHEX=\"4321\"");
                 Serial.println("No fall detected");
             }
             break;
@@ -360,55 +307,4 @@ def execute_function():
     }
 
     }
-    """
-
-    with open("./production_code/production_code.ino", "w") as file:
-        file.write(content)
-    # Call your function here with arg1 and arg2 as arguments
-
-
-
-def update_board():
-    boards = get_connected_arduino_ports()
-
-
-update_board()
-
-
-# Create the main application window
-root = tk.Tk()
-root.title("Function Executor")
-
-
-update_button = tk.Button(root, text="Update Boards", command=update_board)
-update_button.pack()
-
-# Create input fields
-
-label1 = tk.Label(root, text="wifi")
-label1.pack()
-entry1 = tk.Entry(root)
-entry1.pack()
-
-label2 = tk.Label(root, text="password")
-label2.pack()
-entry2 = tk.Entry(root)
-entry2.pack()
-
-label3 = tk.Label(root, text="devui")
-label3.pack()
-entry3 = tk.Entry(root)
-entry3.pack()
-
-
-label4 = tk.Label(root, text="app_key")
-label4.pack()
-entry4 = tk.Entry(root)
-entry4.pack()
-
-# Create a button to execute the function
-execute_button = tk.Button(root, text="Execute Function", command=execute_function)
-execute_button.pack()
-
-# Start the main event loop
-root.mainloop()
+    
